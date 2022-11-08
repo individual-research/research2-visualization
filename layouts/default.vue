@@ -2,7 +2,9 @@
 
 <template>
   <div>
-    layout
+    <nav>
+      <NuxtLink to="/">그래프</NuxtLink>
+    </nav>
     <slot></slot>
   </div>
 </template>
