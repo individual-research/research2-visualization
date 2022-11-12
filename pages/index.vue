@@ -1,5 +1,0 @@
-<script lang="ts" setup></script>
-
-<template>
-  <div>(그래프 페이지)</div>
-</template>
