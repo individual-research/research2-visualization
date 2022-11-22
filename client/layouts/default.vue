@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import communityData from '@/assets/data';
-
-const communities = communityData.map(c => c.community);
+const communities = [{ text: '디시인사이드', href: '/report/dcinside' }];
 </script>
 
 <template>
@@ -10,7 +8,7 @@ const communities = communityData.map(c => c.community);
       <span class="font-semibold"> 커뮤니티-집단 혐오 데이터 시각화 </span>
       <nav class="ml-auto text-sm">
         <NuxtLink class="nav-link" to="/">그래프</NuxtLink>
-        <NuxtLink v-for="community in communities" :key="community" :to="`/report/${community}`" class="nav-link capitalize">{{ community }}</NuxtLink>
+        <NuxtLink v-for="community in communities" :key="community.href" :to="community.href" class="nav-link capitalize">{{ community.text }}</NuxtLink>
       </nav>
     </header>
     <main class="px-4">

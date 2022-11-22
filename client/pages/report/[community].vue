@@ -1,12 +1,41 @@
 <script lang="ts" setup>
-import communityData, { Community } from '@/assets/data';
-
+const { comments, counts, labels } = useData();
 const route = useRoute();
+
+const curPage = ref(1);
+const curLabel = ref('일반');
+const targetPage = ref('1');
+
+const perPage = 20;
+const pageComments = computed(() => comments[curLabel.value].slice((curPage.value - 1) * perPage, curPage.value * perPage));
+const maxPage = computed(() => Math.ceil(comments[curLabel.value].length / perPage));
 
 const communityName = route.params.community as string;
 
-const community = communityData.find(c => (c.community = communityName)) as Community;
-const groups = Object.keys(community.relationships);
+function onChangeTab(tab: string) {
+  curLabel.value = tab;
+  curPage.value = 1;
+}
+
+function prev() {
+  if (curPage.value <= 1) {
+    return;
+  }
+  curPage.value--;
+}
+function next() {
+  if (curPage.value >= maxPage.value) {
+    return;
+  }
+  curPage.value++;
+}
+
+function jumpPage() {
+  const page = Number.parseInt(targetPage.value);
+  if (page >= 1 && page <= maxPage.value) {
+    curPage.value = page;
+  }
+}
 </script>
 
 <template>
@@ -18,15 +47,15 @@ const groups = Object.keys(community.relationships);
         <table class="table-auto w-full text-center">
           <thead class="text-sm font-semibold uppercase text-white bg-indigo-500">
             <tr>
-              <th v-for="group in groups" :key="group" class="p-2 whitespace-nowrap">
-                <div class="font-semibold">{{ group }}</div>
+              <th v-for="label in labels" :key="label" class="p-2 whitespace-nowrap">
+                <div class="font-semibold">{{ label }}</div>
               </th>
             </tr>
           </thead>
           <tbody class="text-sm divide-y divide-gray-100">
             <tr>
-              <td v-for="group in groups" :key="group" class="p-2 whitespace-nowrap bg-indigo-100 text-black">
-                <div class="font-medium">{{ community.relationships[group].score }}</div>
+              <td v-for="label in labels" :key="label" class="p-2 whitespace-nowrap bg-indigo-100 text-black">
+                <div class="font-medium">{{ counts[label] }}</div>
               </td>
             </tr>
           </tbody>
@@ -35,8 +64,8 @@ const groups = Object.keys(community.relationships);
     </div>
     <div class="mt-8 mb-12">
       <h2 class="text-center font-semibold text-xl mb-3 tracking-widest">Hate Speeches</h2>
-      <BaseTab>
-        <BaseTabItem v-for="group in groups" :key="group" :title="group">
+      <BaseTab @change-tab="onChangeTab">
+        <BaseTabItem v-for="label in labels" :key="label" :title="label">
           <table class="table-auto w-full text-left">
             <thead class="text-sm font-semibold uppercase text-black bg-indigo-300">
               <tr>
@@ -55,22 +84,33 @@ const groups = Object.keys(community.relationships);
               </tr>
             </thead>
             <tbody class="text-sm divide-y divide-gray-100">
-              <tr v-for="hate in community.relationships[group].hates" :key="hate.content">
+              <tr v-for="comment in pageComments" :key="comment.no">
                 <td class="p-2 whitespace-nowrap bg-indigo-100 text-black">
-                  <div class="font-medium">{{ hate.postDate }}</div>
+                  <div class="font-medium">{{ comment.postDate }}</div>
                 </td>
                 <td class="p-2 whitespace-nowrap bg-indigo-100 text-black">
-                  <div class="font-medium">{{ hate.postTitle }}</div>
+                  <div class="font-medium">{{ comment.postTitle }}</div>
                 </td>
                 <td class="p-2 whitespace-nowrap bg-indigo-100 text-black">
-                  <div class="font-medium">{{ hate.content }}</div>
+                  <div class="font-medium">{{ comment.content }}</div>
                 </td>
                 <td class="p-2 whitespace-nowrap bg-indigo-100 text-blue-500 text-right">
-                  <a class="font-medium" :href="hate.postLink" target="_blank">{{ hate.postLink }}</a>
+                  <a class="font-medium" :href="comment.postLink" target="_blank">{{ comment.postLink }}</a>
                 </td>
               </tr>
             </tbody>
           </table>
+
+          <div class="text-center my-5 font-medium text-xl">{{ curPage }} / {{ maxPage }}</div>
+
+          <div class="flex justify-center">
+            <input v-model="targetPage" class="py-2 px-3 border rounded" type="text" @keypress.enter="jumpPage" />
+          </div>
+
+          <div class="flex justify-center">
+            <button class="p-2 bg-slate-500 text-white" @click="prev">이전</button>
+            <button class="p-2 bg-slate-500 text-white" @click="next">다음</button>
+          </div>
         </BaseTabItem>
       </BaseTab>
     </div>

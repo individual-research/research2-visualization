@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { VNode, VNodeArrayChildren } from 'vue';
 
+defineEmits(['changeTab']);
+
 const slot = useSlots().default!();
 
 const tabTitles = ref<string[]>([]);
@@ -16,7 +18,16 @@ provide('selectedTitle', selectedTitle);
 <template>
   <div>
     <nav class="flex">
-      <button v-for="title in tabTitles" :key="title" class="flex-grow" :class="{ selected: selectedTitle === title }" @click="selectedTitle = title">
+      <button
+        v-for="title in tabTitles"
+        :key="title"
+        class="flex-grow"
+        :class="{ selected: selectedTitle === title }"
+        @click="
+          selectedTitle = title;
+          $emit('changeTab', title);
+        "
+      >
         {{ title }}
       </button>
     </nav>
