@@ -38,12 +38,12 @@ provide('selectedTitle', selectedTitle);
 
 <style lang="postcss" scoped>
 button {
-  @apply py-3 px-6 bg-indigo-500 text-white text-sm font-semibold transition-all;
+  @apply py-3 px-6 bg-blue-500 text-white text-sm font-semibold transition-all;
 }
 button:hover {
-  @apply bg-indigo-600;
+  @apply bg-blue-600;
 }
 button.selected {
-  @apply bg-indigo-800;
+  @apply bg-blue-800;
 }
 </style>

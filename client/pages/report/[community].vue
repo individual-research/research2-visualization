@@ -6,7 +6,7 @@ const { comments, counts, labels, total } = useData(communityName);
 
 const curPage = ref(1);
 const curLabel = ref('일반');
-const targetPage = ref('1');
+const targetPage = ref('');
 
 const perPage = 20;
 const pageComments = computed(() => comments[curLabel.value].slice((curPage.value - 1) * perPage, curPage.value * perPage));
@@ -45,7 +45,7 @@ function jumpPage() {
       <h2 class="text-center font-semibold text-xl mb-3 tracking-widest">Summary</h2>
       <div class="overflow-x-auto">
         <table class="table-auto w-full text-center">
-          <thead class="text-sm font-semibold uppercase text-white bg-indigo-500">
+          <thead class="text-sm font-semibold uppercase text-white bg-blue-500">
             <tr>
               <th v-for="label in labels" :key="label" class="p-2 whitespace-nowrap">
                 <div class="font-semibold">{{ label }}</div>
@@ -54,7 +54,7 @@ function jumpPage() {
           </thead>
           <tbody class="text-sm divide-y divide-gray-100">
             <tr>
-              <td v-for="label in labels" :key="label" class="p-2 whitespace-nowrap bg-indigo-100 text-black">
+              <td v-for="label in labels" :key="label" class="p-2 whitespace-nowrap bg-blue-100 text-black">
                 <div>
                   <span class="font-medium">{{ ((counts[label] / total) * 100).toFixed(2) }}%</span> ({{ counts[label] }})
                 </div>
@@ -69,7 +69,7 @@ function jumpPage() {
       <BaseTab @change-tab="onChangeTab">
         <BaseTabItem v-for="label in labels" :key="label" :title="label">
           <table class="table-auto w-full text-left">
-            <thead class="text-sm font-semibold uppercase text-black bg-indigo-300">
+            <thead class="text-sm font-semibold uppercase text-black bg-blue-300">
               <tr>
                 <th class="p-2 whitespace-nowrap">
                   <div class="font-semibold">게시일</div>
@@ -87,16 +87,16 @@ function jumpPage() {
             </thead>
             <tbody class="text-sm divide-y divide-gray-100">
               <tr v-for="comment in pageComments" :key="comment.no">
-                <td class="p-2 whitespace-nowrap bg-indigo-100 text-black">
+                <td class="p-2 whitespace-nowrap bg-blue-100 text-black">
                   <div class="font-medium">{{ comment.postDate }}</div>
                 </td>
-                <td class="p-2 whitespace-nowrap bg-indigo-100 text-black">
+                <td class="p-2 whitespace-nowrap bg-blue-100 text-black">
                   <div class="font-medium">{{ comment.postTitle }}</div>
                 </td>
-                <td class="p-2 whitespace-nowrap bg-indigo-100 text-black">
+                <td class="p-2 whitespace-nowrap bg-blue-100 text-black">
                   <div class="font-medium">{{ comment.content }}</div>
                 </td>
-                <td class="p-2 whitespace-nowrap bg-indigo-100 text-blue-500 text-right">
+                <td class="p-2 whitespace-nowrap bg-blue-100 text-blue-500 text-right">
                   <a class="font-medium" :href="comment.postLink" target="_blank">{{ comment.postLink }}</a>
                 </td>
               </tr>
@@ -106,7 +106,7 @@ function jumpPage() {
           <div class="text-center my-5 font-medium text-xl">{{ curPage }} / {{ maxPage }}</div>
 
           <div class="flex justify-center">
-            <input v-model="targetPage" class="py-2 px-3 border rounded" type="text" @keypress.enter="jumpPage" />
+            <input v-model="targetPage" placeholder="페이지" class="py-2 px-3 border rounded" type="text" @keypress.enter="jumpPage" />
           </div>
 
           <div class="flex justify-center">
