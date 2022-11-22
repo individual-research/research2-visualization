@@ -4,7 +4,7 @@ module.exports = {
       name: 'ResearchServer',
       exec_mode: 'cluster',
       instances: 'max',
-      script: './dist/index.js',
+      script: './dist/src/index.js',
       env: {
         PORT: '8081',
       },
