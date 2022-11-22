@@ -21,9 +21,9 @@ function shapeBuilder(data: any, TemplateAPI: any) {
   // `);
   shape.select('path').style('fill', data.payload?.color ?? '#9575cd');
 
-  const titleShape = TextCollection(data.payload?.text ?? '', CollectionStyle(50, 120, 0, 75, 0, 0, 1), [
+  const titleShape = TextCollection(data.payload?.text ?? '', CollectionStyle(50, 120, 0, 70, 0, 0, 1), [
     ShapeStyle('class', 'gly_text.light'),
-    ShapeStyle('font-size', '1.5em'),
+    ShapeStyle('font-size', '1.25em'),
   ]);
   shape.append(() => titleShape.node());
 

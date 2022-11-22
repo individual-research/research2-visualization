@@ -61,8 +61,8 @@ function makeLink(community: string, group: string, label: string) {
   };
 }
 
-const groupNodes = labels.map((l, idx) => makeGroupNode(l, 150 * idx - 600, 0));
-const communityNodes = [makeCommunityNode('디시인사이드', 0, -450), makeCommunityNode('에펨코리아', 300, 450), makeCommunityNode('에브리타임', -300, 450)];
+const groupNodes = labels.map((l, idx) => makeGroupNode(l, 175 * idx - 700, 0));
+const communityNodes = [makeCommunityNode('디시인사이드', 0, -450), makeCommunityNode('에펨코리아', 450, 450), makeCommunityNode('에브리타임', -450, 450)];
 
 onMounted(() => {
   const simulation = graphly.value.simulation;
