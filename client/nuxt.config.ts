@@ -4,7 +4,7 @@ const description = '리워드 기반 학술 정보 QnA 커뮤니티';
 
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss'],
-  css: ['@/assets/css/fonts.css'],
+  css: ['@/assets/css/fonts.css', 'v-network-graph/lib/style.css'],
 
   app: {
     head: {

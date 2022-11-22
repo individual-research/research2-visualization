@@ -1,4 +1,4 @@
-import data from '@/assets/labeled_comments.json';
+import dcinsideData from '@/assets/dcinside_comments.json';
 
 export interface Comment {
   postLink: string;
@@ -39,8 +39,11 @@ function splitLabels(comments: Comment[]) {
   return data;
 }
 
-export const useData = () => {
-  const allComments: Comment[] = data;
+export const useData = (community: string) => {
+  let allComments: Comment[] = [];
+  if (community === 'dcinside') {
+    allComments = dcinsideData;
+  }
 
   const counts = countLabels(allComments);
   const comments = splitLabels(allComments);

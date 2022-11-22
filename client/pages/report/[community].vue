@@ -1,6 +1,8 @@
 <script lang="ts" setup>
-const { comments, counts, labels } = useData();
 const route = useRoute();
+const communityName = route.params.community as string;
+
+const { comments, counts, labels, total } = useData(communityName);
 
 const curPage = ref(1);
 const curLabel = ref('일반');
@@ -9,8 +11,6 @@ const targetPage = ref('1');
 const perPage = 20;
 const pageComments = computed(() => comments[curLabel.value].slice((curPage.value - 1) * perPage, curPage.value * perPage));
 const maxPage = computed(() => Math.ceil(comments[curLabel.value].length / perPage));
-
-const communityName = route.params.community as string;
 
 function onChangeTab(tab: string) {
   curLabel.value = tab;
@@ -55,7 +55,9 @@ function jumpPage() {
           <tbody class="text-sm divide-y divide-gray-100">
             <tr>
               <td v-for="label in labels" :key="label" class="p-2 whitespace-nowrap bg-indigo-100 text-black">
-                <div class="font-medium">{{ counts[label] }}</div>
+                <div>
+                  <span class="font-medium">{{ ((counts[label] / total) * 100).toFixed(2) }}%</span> ({{ counts[label] }})
+                </div>
               </td>
             </tr>
           </tbody>
