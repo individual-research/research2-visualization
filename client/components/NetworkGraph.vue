@@ -5,7 +5,7 @@ import Circle from '@/d3_templates/circle';
 import '@livereader/graphly-d3-vue/style.css';
 
 const graphly = ref<any>(null);
-const { labels, counts, total } = useData('dcinside');
+const { labels, counts, total } = await useData('dcinside');
 
 function makeGroupNode(name: string, x: number, y: number) {
   return {

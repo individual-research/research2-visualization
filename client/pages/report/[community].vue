@@ -2,7 +2,7 @@
 const route = useRoute();
 const communityName = route.params.community as string;
 
-const { comments, counts, labels, total } = useData(communityName);
+const { comments, counts, labels, total } = await useData(communityName);
 
 const curPage = ref(1);
 const curLabel = ref('일반');
@@ -78,7 +78,7 @@ function jumpPage() {
                   <div class="font-semibold">게시글</div>
                 </th>
                 <th class="col3 p-2 whitespace-nowrap">
-                  <div class="font-semibold">혐오댓글</div>
+                  <div class="font-semibold">댓글 내용</div>
                 </th>
                 <th class="col4 p-2 whitespace-nowrap text-right">
                   <div class="font-semibold">게시글 링크</div>
@@ -86,18 +86,18 @@ function jumpPage() {
               </tr>
             </thead>
             <tbody class="text-sm divide-y divide-gray-100">
-              <tr v-for="comment in pageComments" :key="comment.no">
-                <td class="col1 p-2 bg-blue-100 text-black">
+              <tr v-for="comment in pageComments" :key="comment.no" class="bg-blue-100 text-black">
+                <td class="col1 p-2">
                   <div class="font-medium single-line">{{ comment.postDate }}</div>
                 </td>
-                <td class="col2 p-2 bg-blue-100 text-black">
+                <td class="col2 p-2">
                   <div class="font-medium single-line">{{ comment.postTitle }}</div>
                 </td>
-                <td class="col3 p-2 bg-blue-100 text-black">
+                <td class="col3 p-2">
                   <div class="font-medium">{{ comment.content }}</div>
                 </td>
-                <td class="col4 p-2 bg-blue-100 text-blue-500 text-right">
-                  <a class="font-medium single-line" :href="comment.postLink" target="_blank">{{ comment.postLink }}</a>
+                <td class="col4 p-2 text-blue-500 text-right">
+                  <a class="font-medium single-line" :href="comment.postLink" target="_blank">링크</a>
                 </td>
               </tr>
             </tbody>
@@ -129,7 +129,7 @@ function jumpPage() {
 .col3 {
 }
 .col4 {
-  width: 130px;
+  width: 100px;
 }
 
 .single-line {

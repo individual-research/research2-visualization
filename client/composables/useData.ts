@@ -1,4 +1,4 @@
-import dcinsideData from '@/assets/dcinside_comments.json';
+import axios from 'axios';
 
 export interface Comment {
   postLink: string;
@@ -39,11 +39,8 @@ function splitLabels(comments: Comment[]) {
   return data;
 }
 
-export const useData = (community: string) => {
-  let allComments: Comment[] = [];
-  if (community === 'dcinside') {
-    allComments = dcinsideData;
-  }
+export const useData = async (community: string) => {
+  const allComments: Comment[] = await axios.get(`https://api.research.bisue.shop/data/${community}`).then(response => response.data);
 
   const counts = countLabels(allComments);
   const comments = splitLabels(allComments);

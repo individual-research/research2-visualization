@@ -11,7 +11,7 @@ interface Nodes {
   [key: string]: Node;
 }
 
-const { labels, counts, total } = useData('dcinside');
+const { labels, counts, total } = await useData('dcinside');
 const router = useRouter();
 
 function makeLabelNode(name: string, id?: string): Nodes {
