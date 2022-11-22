@@ -68,36 +68,36 @@ function jumpPage() {
       <h2 class="text-center font-semibold text-xl mb-3 tracking-widest">Hate Speeches</h2>
       <BaseTab @change-tab="onChangeTab">
         <BaseTabItem v-for="label in labels" :key="label" :title="label">
-          <table class="table-auto w-full text-left">
+          <table class="table-fixed w-full text-left">
             <thead class="text-sm font-semibold uppercase text-black bg-blue-300">
               <tr>
-                <th class="p-2 whitespace-nowrap">
+                <th class="col1 p-2 whitespace-nowrap">
                   <div class="font-semibold">게시일</div>
                 </th>
-                <th class="p-2 whitespace-nowrap">
+                <th class="col2 p-2 whitespace-nowrap">
                   <div class="font-semibold">게시글</div>
                 </th>
-                <th class="p-2 whitespace-nowrap">
+                <th class="col3 p-2 whitespace-nowrap">
                   <div class="font-semibold">혐오댓글</div>
                 </th>
-                <th class="p-2 whitespace-nowrap text-right">
+                <th class="col4 p-2 whitespace-nowrap text-right">
                   <div class="font-semibold">게시글 링크</div>
                 </th>
               </tr>
             </thead>
             <tbody class="text-sm divide-y divide-gray-100">
               <tr v-for="comment in pageComments" :key="comment.no">
-                <td class="p-2 whitespace-nowrap bg-blue-100 text-black">
-                  <div class="font-medium">{{ comment.postDate }}</div>
+                <td class="col1 p-2 bg-blue-100 text-black">
+                  <div class="font-medium single-line">{{ comment.postDate }}</div>
                 </td>
-                <td class="p-2 whitespace-nowrap bg-blue-100 text-black">
-                  <div class="font-medium">{{ comment.postTitle }}</div>
+                <td class="col2 p-2 bg-blue-100 text-black">
+                  <div class="font-medium single-line">{{ comment.postTitle }}</div>
                 </td>
-                <td class="p-2 whitespace-nowrap bg-blue-100 text-black">
+                <td class="col3 p-2 bg-blue-100 text-black">
                   <div class="font-medium">{{ comment.content }}</div>
                 </td>
-                <td class="p-2 whitespace-nowrap bg-blue-100 text-blue-500 text-right">
-                  <a class="font-medium" :href="comment.postLink" target="_blank">{{ comment.postLink }}</a>
+                <td class="col4 p-2 bg-blue-100 text-blue-500 text-right">
+                  <a class="font-medium single-line" :href="comment.postLink" target="_blank">{{ comment.postLink }}</a>
                 </td>
               </tr>
             </tbody>
@@ -118,3 +118,24 @@ function jumpPage() {
     </div>
   </div>
 </template>
+
+<style lang="postcss">
+.col1 {
+  width: 130px;
+}
+.col2 {
+  width: 130px;
+}
+.col3 {
+}
+.col4 {
+  width: 130px;
+}
+
+.single-line {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+</style>
