@@ -88,16 +88,16 @@ function jumpPage() {
             <tbody class="text-sm divide-y divide-gray-100">
               <tr v-for="comment in pageComments" :key="comment.no" class="bg-blue-100 text-black">
                 <td class="col1 p-2">
-                  <div class="font-medium single-line">{{ comment.postDate }}</div>
+                  <div class="font-light single-line">{{ comment.postDate }}</div>
                 </td>
                 <td class="col2 p-2">
-                  <div class="font-medium single-line">{{ comment.postTitle }}</div>
+                  <a class="font-light text-blue-500 single-line" :href="comment.postLink" target="_blank">{{ comment.postTitle }}</a>
                 </td>
                 <td class="col3 p-2">
-                  <div class="font-medium">{{ comment.content }}</div>
+                  <div class="">{{ comment.content }}</div>
                 </td>
                 <td class="col4 p-2 text-blue-500 text-right">
-                  <a class="font-medium single-line" :href="comment.postLink" target="_blank">링크</a>
+                  <div class="font-medium">{{ comment.labels.join(', ') }}</div>
                 </td>
               </tr>
             </tbody>
@@ -129,7 +129,7 @@ function jumpPage() {
 .col3 {
 }
 .col4 {
-  width: 100px;
+  width: 300px;
 }
 
 .single-line {
