@@ -7,7 +7,8 @@ export interface Comment {
   author: string;
   date: string;
   content: string;
-  label: string;
+  percents: number[];
+  labels: string[];
   no: number;
 }
 
@@ -15,11 +16,12 @@ function countLabels(comments: Comment[]) {
   const counts: { [key: string]: number } = {};
 
   for (const comment of comments) {
-    if (!(comment.label in counts)) {
-      counts[comment.label] = 0;
+    for (const label of comment.labels) {
+      if (!(label in counts)) {
+        counts[label] = 0;
+      }
+      counts[label]++;
     }
-
-    counts[comment.label]++;
   }
 
   return counts;
@@ -29,11 +31,13 @@ function splitLabels(comments: Comment[]) {
   const data: { [key: string]: Comment[] } = {};
 
   for (const comment of comments) {
-    if (!(comment.label in data)) {
-      data[comment.label] = [];
-    }
+    for (const label of comment.labels) {
+      if (!(label in data)) {
+        data[label] = [];
+      }
 
-    data[comment.label].push(comment);
+      data[label].push(comment);
+    }
   }
 
   return data;
