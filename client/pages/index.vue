@@ -2,7 +2,6 @@
 
 <template>
   <div>
-    <!-- <NetworkGraph /> -->
     <ClientOnly>
       <NetworkGraphV2 />
     </ClientOnly>
