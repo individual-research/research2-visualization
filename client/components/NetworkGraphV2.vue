@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import * as vNG from 'v-network-graph';
+import { useAuthors } from '~~/composables/useAuthors';
+import { Comment } from '~~/composables/useData';
 
 interface Node {
   name: string;
@@ -11,8 +13,26 @@ interface Nodes {
   [key: string]: Node;
 }
 
-const { labels, counts, total } = await useData('dcinside');
-const router = useRouter();
+const authors = await useAuthors(10);
+const authorsData = ref<
+  {
+    author: string;
+    comments: {
+      [key: string]: Comment[];
+    };
+    labels: string[];
+    counts: {
+      [key: string]: number;
+    };
+    total: number;
+  }[]
+>([]);
+for (const author of authors) {
+  const { comments, labels, counts, total } = await useData(author);
+  authorsData.value.push({ author, comments, labels, counts, total });
+}
+
+// const router = useRouter();
 
 function makeLabelNode(name: string, id?: string): Nodes {
   return { [name]: { name, id, type: 'label' } };
@@ -25,28 +45,55 @@ function makeEdge(n1: string, n2: string, weight: number) {
   return { [`${n1}-${n2}`]: { source: n1, target: n2, weight } };
 }
 
+function makeLabelNodeList(data: { name: string; id?: string }[]): Nodes {
+  let result = {};
+
+  for (const item of data) {
+    result = { ...result, ...makeLabelNode(item.name, item.id) };
+  }
+
+  return result;
+}
+function makeCommunityNodeList(data: { name: string; id?: string }[]): Nodes {
+  let result = {};
+
+  for (const item of data) {
+    result = { ...result, ...makeCommunityNode(item.name, item.id) };
+  }
+
+  return result;
+}
+function makeEdgeList(data: { n1: string; n2: string; weight: number }[]): Nodes {
+  let result = {};
+
+  for (const item of data) {
+    result = { ...result, ...makeEdge(item.n1, item.n2, item.weight) };
+  }
+
+  return result;
+}
+
+const labels = ['출신', '외모', '정치성향', '욕설', '연령', '성', '인종', '종교', '일반'];
+
 // nodes
 let nodes = reactive<{ [key: string]: Node }>({});
-labels
-  .map(l => makeLabelNode(l))
-  .forEach(node => {
-    nodes = { ...nodes, ...node };
-  });
-
-const communityNodes = {
-  ...makeCommunityNode('디시인사이드', 'dcinside'),
-  ...makeCommunityNode('에펨코리아', 'fmkorea'),
-  ...makeCommunityNode('에브리타임', 'everytime'),
-};
-nodes = { ...nodes, ...communityNodes };
+const labelNodes = makeLabelNodeList(labels.map(l => ({ name: l })));
+const communityNodes = makeCommunityNodeList(authorsData.value.map(a => ({ name: a.author, id: a.author })));
+nodes = { ...labelNodes, ...communityNodes };
 
 // edges
-let edges = reactive({});
-labels
-  .map(l => makeEdge('디시인사이드', l, (counts[l] / total) * 100))
-  .forEach(edge => {
-    edges = { ...edges, ...edge };
-  });
+const edges = ref<any>({});
+// let pair: { n1: string; n2: string; weight: number }[] = [];
+// for (const data of authorsData.value) {
+//   const edges = labels.map(l => ({
+//     n1: data.author,
+//     n2: l,
+//     weight: (data.counts[l] / data.total) * 100,
+//   }));
+//   pair = pair.concat(edges);
+// }
+
+// edges = makeEdgeList(pair);
 
 // layouts
 const layouts = {
@@ -60,11 +107,18 @@ const layouts = {
     정치성향: { x: 200, y: 0 },
     연령: { x: 300, y: 0 },
     종교: { x: 400, y: 0 },
-    디시인사이드: { x: 0, y: -200 },
-    에펨코리아: { x: -200, y: 200 },
-    에브리타임: { x: 200, y: 200 },
   },
 };
+authorsData.value
+  .map((a, idx) => ({
+    [a.author]: {
+      x: ((idx % 5) - 2) * 200,
+      y: idx < 5 ? -200 : 200,
+    },
+  }))
+  .forEach(d => {
+    layouts.nodes = { ...layouts.nodes, ...d };
+  });
 
 // configs
 const configs = vNG.defineConfigs({
@@ -128,13 +182,32 @@ const configs = vNG.defineConfigs({
   },
 });
 
+function showAuthorEdge(author: string) {
+  const data = authorsData.value.find(a => a.author === author)!;
+  const myEdges = labels.map(l => ({
+    n1: data.author,
+    n2: l,
+    weight: (data.counts[l] / data.total) * 100,
+  }));
+
+  // if (edges.value) {
+  // }
+
+  edges.value = { ...makeEdgeList(myEdges) };
+
+  console.log(edges.value);
+}
+
 // eventHandlers
 const eventHandlers: vNG.EventHandlers = {
   'node:click': ({ node }) => {
     // toggle
     const target = nodes[node];
+    // if (target.id) {
+    //   router.push(`/report/${target.id}`);
+    // }
     if (target.id) {
-      router.push(`/report/${target.id}`);
+      showAuthorEdge(target.id);
     }
   },
 };
