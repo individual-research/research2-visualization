@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import * as vNG from 'v-network-graph';
-import { useAuthors } from '~~/composables/useAuthors';
-import { Comment } from '~~/composables/useData';
+import { labels } from '~~/composables/useData';
 
 interface Node {
   name: string;
@@ -13,26 +12,9 @@ interface Nodes {
   [key: string]: Node;
 }
 
-const authors = await useAuthors(10);
-const authorsData = ref<
-  {
-    author: string;
-    comments: {
-      [key: string]: Comment[];
-    };
-    labels: string[];
-    counts: {
-      [key: string]: number;
-    };
-    total: number;
-  }[]
->([]);
-for (const author of authors) {
-  const { comments, labels, counts, total } = await useData(author);
-  authorsData.value.push({ author, comments, labels, counts, total });
-}
-
-// const router = useRouter();
+const dcinside = await useData('dcinside');
+const fmkorea = await useData('dcinside');
+const communitiesData = ref([dcinside, fmkorea]);
 
 function makeLabelNode(name: string, id?: string): Nodes {
   return { [name]: { name, id, type: 'label' } };
@@ -73,12 +55,10 @@ function makeEdgeList(data: { n1: string; n2: string; weight: number }[]): Nodes
   return result;
 }
 
-const labels = ['출신', '외모', '정치성향', '욕설', '연령', '성', '인종', '종교', '일반'];
-
 // nodes
 let nodes = reactive<{ [key: string]: Node }>({});
 const labelNodes = makeLabelNodeList(labels.map(l => ({ name: l })));
-const communityNodes = makeCommunityNodeList(authorsData.value.map(a => ({ name: a.author, id: a.author })));
+const communityNodes = makeCommunityNodeList(communitiesData.value.map(a => ({ name: a.community, id: a.community })));
 nodes = { ...labelNodes, ...communityNodes };
 
 // edges
@@ -109,9 +89,9 @@ const layouts = {
     종교: { x: 400, y: 0 },
   },
 };
-authorsData.value
+communitiesData.value
   .map((a, idx) => ({
-    [a.author]: {
+    [a.community]: {
       x: ((idx % 5) - 2) * 200,
       y: idx < 5 ? -200 : 200,
     },
@@ -183,9 +163,9 @@ const configs = vNG.defineConfigs({
 });
 
 function showAuthorEdge(author: string) {
-  const data = authorsData.value.find(a => a.author === author)!;
+  const data = communitiesData.value.find(a => a.community === author)!;
   const myEdges = labels.map(l => ({
-    n1: data.author,
+    n1: data.community,
     n2: l,
     weight: (data.counts[l] / data.total) * 100,
   }));

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 const route = useRoute();
-const author = route.params.author as string;
+const communityName = route.params.community as string;
 
-const { comments, counts, labels, total } = await useData(author);
+const { comments, counts, labels, total } = await useData(communityName);
 
 const curPage = ref(1);
 const curLabel = ref('출신');
@@ -40,7 +40,7 @@ function jumpPage() {
 
 <template>
   <div class="py-8">
-    <h1 class="text-center font-bold text-2xl">"{{ author }}" 혐오 보고서</h1>
+    <h1 class="text-center font-bold text-2xl">"{{ communityName }}" 혐오 보고서</h1>
     <div class="mt-8 mb-12">
       <h2 class="text-center font-semibold text-xl mb-3 tracking-widest">Summary ({{ total }} 개)</h2>
       <div class="overflow-x-auto">

@@ -12,12 +12,7 @@ export interface Comment {
   no: number;
 }
 
-export interface CommentByAuthor {
-  author: string;
-  comments: Comment[];
-}
-
-const labels = ['출신', '외모', '정치성향', '욕설', '연령', '성', '인종', '종교', '일반'];
+export const labels = ['출신', '외모', '정치성향', '욕설', '연령', '성', '인종', '종교', '일반'];
 
 function countLabels(comments: Comment[]) {
   const counts: { [key: string]: number } = {};
@@ -51,12 +46,12 @@ function splitLabels(comments: Comment[]) {
   return data;
 }
 
-export const useData = async (author: string) => {
-  const allComments: Comment[] = await axios.get(`https://api.research.bisue.shop/author/${author}`).then(response => response.data);
+export const useData = async (community: string) => {
+  const allComments: Comment[] = await axios.get(`https://api.research.bisue.shop/data/${community}`).then(response => response.data);
 
   const counts = countLabels(allComments);
   const comments = splitLabels(allComments);
   const total = allComments.length;
 
-  return { comments, counts, total, labels: Object.keys(counts) };
+  return { community, comments, counts, total, labels: Object.keys(counts) };
 };
