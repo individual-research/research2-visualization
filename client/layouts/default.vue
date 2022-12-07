@@ -11,7 +11,7 @@ const communities = [
       <NuxtLink class="font-semibold" to="/"> 커뮤니티 혐오 데이터 시각화 </NuxtLink>
       <nav class="ml-auto text-sm">
         <NuxtLink class="nav-link" to="/">그래프</NuxtLink>
-        <NuxtLink v-for="community in communities" :key="community.text" :to="community.href">{{ community.text }}</NuxtLink>
+        <NuxtLink v-for="community in communities" :key="community.text" class="nav-link" :to="community.href">{{ community.text }}</NuxtLink>
       </nav>
     </header>
     <main class="px-4">

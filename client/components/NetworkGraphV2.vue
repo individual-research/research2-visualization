@@ -12,9 +12,12 @@ interface Nodes {
   [key: string]: Node;
 }
 
-const dcinside = await useData('dcinside');
-const fmkorea = await useData('dcinside');
-const communitiesData = ref([dcinside, fmkorea]);
+const dcinside = await useCounts('dcinside');
+const fmkorea = await useCounts('fmkorea');
+const communitiesData = ref([
+  { community: 'dcinside', counts: dcinside },
+  { community: 'fmkorea', counts: fmkorea },
+]);
 
 function makeLabelNode(name: string, id?: string): Nodes {
   return { [name]: { name, id, type: 'label' } };
@@ -92,7 +95,7 @@ const layouts = {
 communitiesData.value
   .map((a, idx) => ({
     [a.community]: {
-      x: ((idx % 5) - 2) * 200,
+      x: ((idx % 5) - 1) * 200 + 100,
       y: idx < 5 ? -200 : 200,
     },
   }))
@@ -162,16 +165,26 @@ const configs = vNG.defineConfigs({
   },
 });
 
-function showAuthorEdge(author: string) {
-  const data = communitiesData.value.find(a => a.community === author)!;
+function showCommunityEdge(community: string) {
+  const data = communitiesData.value.find(a => a.community === community)!;
   const myEdges = labels.map(l => ({
     n1: data.community,
     n2: l,
-    weight: (data.counts[l] / data.total) * 100,
+    weight: (data.counts[l] / Object.values(data.counts).reduce((prev, cur) => prev + cur, 0)) * 100,
   }));
 
   // if (edges.value) {
   // }
+
+  edges.value = { ...makeEdgeList(myEdges) };
+}
+
+function showLabelEdge(label: string) {
+  const myEdges = communitiesData.value.map(data => ({
+    n1: data.community,
+    n2: label,
+    weight: (data.counts[label] / Object.values(data.counts).reduce((prev, cur) => prev + cur, 0)) * 100,
+  }));
 
   edges.value = { ...makeEdgeList(myEdges) };
 
@@ -186,8 +199,10 @@ const eventHandlers: vNG.EventHandlers = {
     // if (target.id) {
     //   router.push(`/report/${target.id}`);
     // }
-    if (target.id) {
-      showAuthorEdge(target.id);
+    if (target.type === 'community' && target.id) {
+      showCommunityEdge(target.id);
+    } else {
+      showLabelEdge(target.name);
     }
   },
 };

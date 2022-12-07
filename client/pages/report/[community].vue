@@ -1,16 +1,35 @@
 <script lang="ts" setup>
+import { Comment } from '~~/composables/useData';
+
 const route = useRoute();
 const communityName = route.params.community as string;
-
-const { comments, counts, labels, total } = await useData(communityName);
 
 const curPage = ref(1);
 const curLabel = ref('출신');
 const targetPage = ref('');
 
-const perPage = 20;
-const pageComments = computed(() => comments[curLabel.value].slice((curPage.value - 1) * perPage, curPage.value * perPage));
-const maxPage = computed(() => Math.ceil(comments[curLabel.value].length / perPage));
+const counts = await fetchCount();
+const total = Object.values(counts).reduce((prev, cur) => prev + cur, 0);
+const comments = ref<Comment[]>([]);
+const maxPage = ref<number>(0);
+
+async function fetchComment() {
+  const paginator = await useComments(communityName, curLabel.value, curPage.value);
+  comments.value = paginator.data;
+  maxPage.value = paginator.maxPage;
+}
+
+async function fetchCount() {
+  return await useCounts(communityName);
+}
+
+await fetchComment();
+watch(curPage, async () => {
+  await fetchComment();
+});
+watch(curLabel, async () => {
+  await fetchComment();
+});
 
 function onChangeTab(tab: string) {
   curLabel.value = tab;
@@ -42,7 +61,7 @@ function jumpPage() {
   <div class="py-8">
     <h1 class="text-center font-bold text-2xl">"{{ communityName }}" 혐오 보고서</h1>
     <div class="mt-8 mb-12">
-      <h2 class="text-center font-semibold text-xl mb-3 tracking-widest">Summary ({{ total }} 개)</h2>
+      <h2 class="text-center font-semibold text-xl mb-3 tracking-widest">Summary ({{ Intl.NumberFormat('ko-KR').format(total) }} 개)</h2>
       <div class="overflow-x-auto">
         <table class="table-auto w-full text-center">
           <thead class="text-sm font-semibold uppercase text-white bg-blue-500">
@@ -86,7 +105,7 @@ function jumpPage() {
               </tr>
             </thead>
             <tbody class="text-sm divide-y divide-gray-100">
-              <tr v-for="comment in pageComments" :key="comment.no" class="bg-blue-100 text-black">
+              <tr v-for="comment in comments" :key="comment.no" class="bg-blue-100 text-black">
                 <td class="col1 p-2">
                   <div class="font-light single-line">{{ comment.postDate }}</div>
                 </td>
