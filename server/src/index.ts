@@ -3,9 +3,11 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import fs from 'fs';
 
-const communityData = {
-  dcinside: JSON.parse(fs.readFileSync('data/dcinside.json').toString()),
-  fmkorea: JSON.parse(fs.readFileSync('data/fmkorea.json').toString()),
+const communityData: {
+  [key: string]: any[];
+} = {
+  dcinside: JSON.parse(fs.readFileSync('data/dcinside.json').toString()) as any[],
+  fmkorea: JSON.parse(fs.readFileSync('data/fmkorea.json').toString()) as any[],
 };
 
 dotenv.config();
@@ -27,7 +29,7 @@ app.get('/data/:community', (req, res) => {
   console.log('data');
 
   if (community in communityData) {
-    return res.json(communityData);
+    return res.json(communityData[community]);
   } else {
     return res.json(null).status(404);
   }
