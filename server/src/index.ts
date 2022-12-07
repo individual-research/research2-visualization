@@ -4,8 +4,8 @@ import cors from 'cors';
 import fs from 'fs';
 
 const communityData = {
-  dcinside: JSON.parse(fs.readFileSync('data/dcinside_comments.json').toString()),
-  fmkorea: JSON.parse(fs.readFileSync('data/dcinside_comments.json').toString()),
+  dcinside: JSON.parse(fs.readFileSync('data/dcinside.json').toString()),
+  fmkorea: JSON.parse(fs.readFileSync('data/fmkorea.json').toString()),
 };
 
 dotenv.config();
