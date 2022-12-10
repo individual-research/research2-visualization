@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { Comment } from '~~/composables/useData';
+import dayjs from 'dayjs';
+import { Comment, dates } from '~~/composables/useData';
 
 const route = useRoute();
 const communityName = route.params.community as string;
@@ -7,28 +8,35 @@ const communityName = route.params.community as string;
 const curPage = ref(1);
 const curLabel = ref('출신');
 const targetPage = ref('');
+const selectedDate = ref(dates[0]);
 
-const counts = await fetchCount();
-const total = Object.values(counts).reduce((prev, cur) => prev + cur, 0);
+const counts = ref<{ [key: string]: number }>({});
+const total = ref<number>(0);
 const comments = ref<Comment[]>([]);
 const maxPage = ref<number>(0);
 
 async function fetchComment() {
-  const paginator = await useComments(communityName, curLabel.value, curPage.value);
+  const paginator = await useComments(communityName, selectedDate.value, curLabel.value, curPage.value);
   comments.value = paginator.data;
   maxPage.value = paginator.maxPage;
 }
 
 async function fetchCount() {
-  return await useCounts(communityName);
+  counts.value = await useCounts(communityName, selectedDate.value);
+  total.value = Object.values(counts.value).reduce((prev, cur) => prev + cur, 0);
 }
 
-await fetchComment();
+await Promise.all([fetchComment(), fetchCount()]);
+
 watch(curPage, async () => {
   await fetchComment();
 });
 watch(curLabel, async () => {
   await fetchComment();
+});
+watch(selectedDate, async () => {
+  await fetchComment();
+  await fetchCount();
 });
 
 function onChangeTab(tab: string) {
@@ -59,6 +67,11 @@ function jumpPage() {
 
 <template>
   <div class="py-8">
+    <div class="mb-5">
+      <select v-model="selectedDate">
+        <option v-for="date in dates" :key="date" :value="date">{{ date }}</option>
+      </select>
+    </div>
     <h1 class="text-center font-bold text-2xl">"{{ communityName }}" 혐오 보고서</h1>
     <div class="mt-8 mb-12">
       <h2 class="text-center font-semibold text-xl mb-3 tracking-widest">Summary ({{ Intl.NumberFormat('ko-KR').format(total) }} 개)</h2>
@@ -107,7 +120,7 @@ function jumpPage() {
             <tbody class="text-sm divide-y divide-gray-100">
               <tr v-for="comment in comments" :key="comment.no" class="bg-blue-100 text-black">
                 <td class="col1 p-2">
-                  <div class="font-light single-line">{{ comment.postDate }}</div>
+                  <div class="font-light single-line">{{ dayjs(comment.postDate).format('MM-DD') }}</div>
                 </td>
                 <td class="col2 p-2">
                   <a class="font-light text-blue-500 single-line" :href="comment.postLink" target="_blank">{{ comment.postTitle }}</a>

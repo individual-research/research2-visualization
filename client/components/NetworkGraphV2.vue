@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as vNG from 'v-network-graph';
-import { labels } from '~~/composables/useData';
+import { labels, dates } from '~~/composables/useData';
 
 interface Node {
   name: string;
@@ -12,12 +12,27 @@ interface Nodes {
   [key: string]: Node;
 }
 
-const dcinside = await useCounts('dcinside');
-const fmkorea = await useCounts('fmkorea');
-const communitiesData = ref([
-  { community: 'dcinside', counts: dcinside },
-  { community: 'fmkorea', counts: fmkorea },
-]);
+// date
+const route = useRoute();
+const router = useRouter();
+const selectedDate = ref<string>((route.query.date as string) || '2022-10-20');
+watch(selectedDate, date => {
+  window.location.href = `/?date=${date}`;
+});
+
+const dcinside = ref<{ [key: string]: number }>({});
+const fmkorea = ref<{ [key: string]: number }>({});
+const communitiesData = ref<{ community: string; counts: { [key: string]: number } }[]>([]);
+
+async function fetchData() {
+  dcinside.value = await useCounts('dcinside', selectedDate.value);
+  fmkorea.value = await useCounts('fmkorea', selectedDate.value);
+  communitiesData.value = [
+    { community: 'dcinside', counts: dcinside.value },
+    { community: 'fmkorea', counts: fmkorea.value },
+  ];
+}
+await fetchData();
 
 function makeLabelNode(name: string, id?: string): Nodes {
   return { [name]: { name, id, type: 'label' } };
@@ -218,6 +233,11 @@ onMounted(() => {
 
 <template>
   <div>
+    <div>
+      <select v-model="selectedDate" @change="router.push(`/?date=${selectedDate}`)">
+        <option v-for="date in dates" :key="date" :value="date">{{ date }}</option>
+      </select>
+    </div>
     <VNetworkGraph ref="graph" class="graph" :nodes="nodes" :edges="edges" :layouts="layouts" :configs="configs" :event-handlers="eventHandlers">
       <template #edge-label="{ edge, ...slotProps }">
         <v-edge-label :text="`${edge.weight.toFixed(2)}%`" align="center" vertical-align="center" v-bind="slotProps" />
