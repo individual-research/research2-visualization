@@ -96,8 +96,7 @@ app.get('/count/:community/:date', (req, res) => {
   console.log(community, date);
 
   try {
-    const comments: Comment[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
-    const counts = countLabels(comments);
+    const counts = JSON.parse(fs.readFileSync(`data/${community}_counts/counts_${community}_labeled-${date}.json`).toString());
 
     return res.json(counts);
   } catch (e) {
