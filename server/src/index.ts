@@ -37,26 +37,26 @@ function splitLabels(comments: any[]) {
   return data;
 }
 
-const rawCommunityData: {
-  [key: string]: any[];
-} = {
-  dcinside: JSON.parse(fs.readFileSync('data/dcinside.json').toString()) as any[],
-  fmkorea: JSON.parse(fs.readFileSync('data/fmkorea.json').toString()) as any[],
-};
+// const rawCommunityData: {
+//   [key: string]: any[];
+// } = {
+//   dcinside: JSON.parse(fs.readFileSync('data/dcinside.json').toString()) as any[],
+//   fmkorea: JSON.parse(fs.readFileSync('data/fmkorea.json').toString()) as any[],
+// };
 
-const communityData: {
-  [key: string]: ReturnType<typeof splitLabels>;
-} = {
-  dcinside: splitLabels(rawCommunityData['dcinside']),
-  fmkorea: splitLabels(rawCommunityData['fmkorea']),
-};
+// const communityData: {
+//   [key: string]: ReturnType<typeof splitLabels>;
+// } = {
+//   dcinside: splitLabels(rawCommunityData['dcinside']),
+//   fmkorea: splitLabels(rawCommunityData['fmkorea']),
+// };
 
-const countData: {
-  [key: string]: ReturnType<typeof countLabels>;
-} = {
-  dcinside: countLabels(rawCommunityData['dcinside']),
-  fmkorea: countLabels(rawCommunityData['fmkorea']),
-};
+// const countData: {
+//   [key: string]: ReturnType<typeof countLabels>;
+// } = {
+//   dcinside: countLabels(rawCommunityData['dcinside']),
+//   fmkorea: countLabels(rawCommunityData['fmkorea']),
+// };
 
 dotenv.config();
 
@@ -71,38 +71,36 @@ app.get('/', (req, res) => {
   console.log('123');
 });
 
-app.get('/data/:community', (req, res) => {
-  const { community } = req.params;
-
-  if (community in communityData) {
-    return res.json(communityData[community]);
-  } else {
-    return res.json(null).status(404);
-  }
-});
-
-app.get('/data/:community/:type/:page', (req, res) => {
-  const { community, type, page } = req.params;
+app.get('/data/:community/:date/:type/:page', (req, res) => {
+  const { community, date, type, page } = req.params;
 
   const perPage = 20;
   const pageInt = Number.parseInt(page);
 
-  if (community in communityData) {
+  try {
+    const comments: Comment[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+    const splited = splitLabels(comments);
+
     return res.json({
-      data: communityData[community][type].slice((pageInt - 1) * perPage, pageInt * perPage),
-      maxPage: Math.ceil(communityData[community][type].length / perPage),
+      data: splited[type].slice((pageInt - 1) * perPage, pageInt * perPage),
+      maxPage: Math.ceil(splited[type].length / perPage),
     });
-  } else {
+  } catch (e) {
     return res.json(null).status(404);
   }
 });
 
-app.get('/count/:community', (req, res) => {
-  const { community } = req.params;
+app.get('/count/:community/:date', (req, res) => {
+  const { community, date } = req.params;
 
-  if (community in countData) {
-    return res.json(countData[community]);
-  } else {
+  console.log(community, date);
+
+  try {
+    const comments: Comment[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+    const counts = countLabels(comments);
+
+    return res.json(counts);
+  } catch (e) {
     return res.json(null).status(404);
   }
 });
