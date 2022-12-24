@@ -74,7 +74,7 @@ app.get('/', (req, res) => {
 
 app.get('/data/:community/:date/:type/:page', (req, res) => {
   const { community, date, type, page } = req.params;
-  const { search } = req.query;
+  const { search, search_type } = req.query;
 
   const perPage = 20;
   const pageInt = Number.parseInt(page);
@@ -86,7 +86,11 @@ app.get('/data/:community/:date/:type/:page', (req, res) => {
       const keywords = (search as string).split(' ');
       comments = comments.filter(c => {
         for (const word of keywords) {
-          if (c.content.includes(word)) return true;
+          if (search_type === 'post') {
+            if (c.postTitle.includes(word)) return true;
+          } else {
+            if (c.content.includes(word)) return true;
+          }
         }
         return false;
       });
@@ -104,7 +108,7 @@ app.get('/data/:community/:date/:type/:page', (req, res) => {
 
 app.get('/count/:community/:date', (req, res) => {
   const { community, date } = req.params;
-  const { search } = req.query;
+  const { search, search_type } = req.query;
 
   console.log(community, date);
 
@@ -117,7 +121,11 @@ app.get('/count/:community/:date', (req, res) => {
         const keywords = (search as string).split(' ');
         comments = comments.filter(c => {
           for (const word of keywords) {
-            if (c.content.includes(word)) return true;
+            if (search_type === 'post') {
+              if (c.postTitle.includes(word)) return true;
+            } else {
+              if (c.content.includes(word)) return true;
+            }
           }
           return false;
         });
