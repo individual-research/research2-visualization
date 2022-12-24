@@ -73,12 +73,22 @@ app.get('/', (req, res) => {
 
 app.get('/data/:community/:date/:type/:page', (req, res) => {
   const { community, date, type, page } = req.params;
+  const { search } = req.query;
 
   const perPage = 20;
   const pageInt = Number.parseInt(page);
 
   try {
-    const comments: Comment[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+    let comments: any[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+    if (search) {
+      const keywords = (search as string).split(' ');
+      comments = comments.filter(c => {
+        for (const word of keywords) {
+          if (c.content.includes(word)) return true;
+        }
+        return false;
+      });
+    }
     const splited = splitLabels(comments);
 
     return res.json({
