@@ -4,10 +4,12 @@ import { Comment, dates } from '~~/composables/useData';
 
 const route = useRoute();
 const communityName = route.params.community as string;
+const searchQuery = route.query.search as string;
 
 const curPage = ref(1);
 const curLabel = ref('출신');
 const targetPage = ref('');
+const searchQueryInput = ref(searchQuery);
 const selectedDate = ref(dates[0]);
 
 const counts = ref<{ [key: string]: number }>({});
@@ -16,13 +18,13 @@ const comments = ref<Comment[]>([]);
 const maxPage = ref<number>(0);
 
 async function fetchComment() {
-  const paginator = await useComments(communityName, selectedDate.value, curLabel.value, curPage.value);
+  const paginator = await useComments(communityName, selectedDate.value, curLabel.value, curPage.value, searchQuery);
   comments.value = paginator.data;
   maxPage.value = paginator.maxPage;
 }
 
 async function fetchCount() {
-  counts.value = await useCounts(communityName, selectedDate.value);
+  counts.value = await useCounts(communityName, selectedDate.value, searchQuery);
   total.value = Object.values(counts.value).reduce((prev, cur) => prev + cur, 0);
 }
 
@@ -61,6 +63,12 @@ function jumpPage() {
   const page = Number.parseInt(targetPage.value);
   if (page >= 1 && page <= maxPage.value) {
     curPage.value = page;
+  }
+}
+
+function search() {
+  if (searchQueryInput.value) {
+    location.href = `/report/${communityName}?search=${searchQueryInput.value}`;
   }
 }
 </script>
@@ -142,6 +150,10 @@ function jumpPage() {
           </div>
 
           <div class="flex justify-center">
+            <input v-model="searchQueryInput" placeholder="키워드 검색(공백 구분)" class="py-2 px-3 border rounded" type="text" @keypress.enter="search" />
+          </div>
+
+          <div class="flex justify-center">
             <button class="p-2 bg-slate-500 text-white" @click="prev">이전</button>
             <button class="p-2 bg-slate-500 text-white" @click="next">다음</button>
           </div>
@@ -153,15 +165,15 @@ function jumpPage() {
 
 <style lang="postcss">
 .col1 {
-  width: 130px;
+  width: 60px;
 }
 .col2 {
-  width: 130px;
+  width: 300px;
 }
 .col3 {
 }
 .col4 {
-  width: 300px;
+  width: 150px;
 }
 
 .single-line {
