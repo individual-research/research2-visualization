@@ -18,13 +18,13 @@ const comments = ref<Comment[]>([]);
 const maxPage = ref<number>(0);
 
 async function fetchComment() {
-  const paginator = await useComments(communityName, selectedDate.value, curLabel.value, curPage.value, searchQuery);
+  const paginator = await useComments(communityName, selectedDate.value, curLabel.value, curPage.value, searchQuery, 'post');
   comments.value = paginator.data;
   maxPage.value = paginator.maxPage;
 }
 
 async function fetchCount() {
-  counts.value = await useCounts(communityName, selectedDate.value, searchQuery);
+  counts.value = await useCounts(communityName, selectedDate.value, searchQuery, 'post');
   total.value = Object.values(counts.value).reduce((prev, cur) => prev + cur, 0);
 }
 
