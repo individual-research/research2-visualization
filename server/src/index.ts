@@ -80,8 +80,8 @@ app.get('/data/:community/:date/:type/:page', (req, res) => {
   const pageInt = Number.parseInt(page);
 
   try {
-    // let comments: any[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
-    let comments = cache[community][date];
+    let comments: any[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+    // let comments = cache[community][date];
     if (search) {
       const keywords = (search as string).split(' ');
       comments = comments.filter(c => {
@@ -111,8 +111,8 @@ app.get('/count/:community/:date', (req, res) => {
   try {
     let counts;
     if (search) {
-      // let comments: any[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
-      let comments: any[] = cache[community][date];
+      let comments: any[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+      // let comments: any[] = cache[community][date];
       if (search) {
         const keywords = (search as string).split(' ');
         comments = comments.filter(c => {
