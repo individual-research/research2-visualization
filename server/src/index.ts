@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import fs from 'fs';
+import cache from './cache';
 
 const labels = ['출신', '외모', '정치성향', '욕설', '연령', '성', '인종', '종교', '일반'];
 
@@ -79,7 +80,8 @@ app.get('/data/:community/:date/:type/:page', (req, res) => {
   const pageInt = Number.parseInt(page);
 
   try {
-    let comments: any[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+    // let comments: any[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+    let comments = cache[community][date];
     if (search) {
       const keywords = (search as string).split(' ');
       comments = comments.filter(c => {
@@ -109,7 +111,8 @@ app.get('/count/:community/:date', (req, res) => {
   try {
     let counts;
     if (search) {
-      let comments: any[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+      // let comments: any[] = JSON.parse(fs.readFileSync(`data/${community}/${community}_labeled-${date}.json`).toString());
+      let comments: any[] = cache[community][date];
       if (search) {
         const keywords = (search as string).split(' ');
         comments = comments.filter(c => {
