@@ -7,6 +7,8 @@
     "start": "node ./dist/index.js",
     "build": "tsc",
     "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/index.ts",
+    "group": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/group.ts",
+    "count": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/counts.ts",
     "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore .",
     "prettier": "prettier --write --ignore-path .gitignore ."
   },

@@ -18,12 +18,12 @@ function countLabels(comments: any[]) {
   return counts;
 }
 
-const files = fs.readdirSync('data/fmkorea');
+const files = fs.readdirSync('data/fmkorea_경찰');
 
 for (const file of files) {
-  const comments: Comment[] = JSON.parse(fs.readFileSync(`data/fmkorea/${file}`).toString());
+  const comments: Comment[] = JSON.parse(fs.readFileSync(`data/fmkorea_경찰/${file}`).toString());
 
   const counts = countLabels(comments);
 
-  fs.writeFileSync(`data/fmkorea_counts/counts_${file}`, JSON.stringify(counts, null, 2));
+  fs.writeFileSync(`data/fmkorea_경찰_counts/counts_${file}`, JSON.stringify(counts, null, 2));
 }
